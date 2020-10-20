@@ -19,7 +19,7 @@ const Home = (props) => {
             {
                 currentUser?
                 (
-                    <h1>user</h1>
+                    <h1>HOME</h1>
                 ):
                 (
                     <h1>loading...</h1>

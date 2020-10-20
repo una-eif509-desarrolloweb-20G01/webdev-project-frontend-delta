@@ -58,3 +58,8 @@ p,h1,h2,h3,h4,h5{
   margin: 16px 24px 16px 0;
   float: left;
 }
+
+.ant-form-item-label > label {
+
+  color: rgb(255, 255, 255);
+}
