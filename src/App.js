@@ -8,6 +8,7 @@ import AuthService from "./services/auth.service";
 import Login from "./components/Login";
 import Home from "./components/Home";
 import Department from "./components/Department";
+import Hour from "./components/Hour";
 import Signup from "./components/Signup";
 
 function App() {
@@ -65,7 +66,8 @@ function App() {
                         <Switch>
                             <Route exact path={["/", "/home"]} component={Home}/>
                             <Route exact path="/login" component={Login}/>
-                            <Route exact path="/department" component={Department}/>
+                            <Route exact path="/departments" component={Department}/>
+                            <Route exact path="/hours" component={Hour}/>
                             <Route exact path="/signup" component={Signup}/>
                         </Switch>
                     </div>
