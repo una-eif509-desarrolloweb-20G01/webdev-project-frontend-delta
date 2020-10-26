@@ -1,17 +1,18 @@
 import React, {useState, useEffect} from "react";
 import {Alert, Table} from 'antd';
-import { Link } from "react-router-dom";
-import DepartmentService from "../services/department.service";
 
-const initialDepartmentListState = [
+import HourService from "../services/hour.service";
+
+const initialHourListState = [
     {
-        "idDepartment": 0,
-        "name": ""
+        "idHour": 0,
+        "hours": 0,
+        "date": ""
     }
 ];
 
-const Department = (props) => {
-    const [DepartmentList, setDepartmentList] = useState(initialDepartmentListState);
+const Hour = (props) => {
+    const [HourList, setHourList] = useState(initialHourListState);
     const [error, setError] = useState(false);
 
     /**
@@ -26,9 +27,9 @@ const Department = (props) => {
 
     /** Service methods **/
     const getAllPrioritiesMethod = () => {
-        DepartmentService.getAll()
+        HourService.getAll()
             .then(response => {
-                setDepartmentList(response.data);
+                setHourList(response.data);
                 console.log(response.data);
             })
             .catch(err => {
@@ -46,20 +47,14 @@ const Department = (props) => {
     /** General Methods **/
     const columns = [
         {
-            title: 'Department',
-            //render: (Department) => Department.name
-            render: (Department) =>
-                <Link
-                    to={"/departments/add/" + Department.idDepartment}
-                >
-                    {Department.name}
-                </Link>
+            title: 'Hour',
+            render: (Hour) => Hour.hours
         }
     ];
 
     return (
         <div>
-            <Table rowKey={DepartmentList => DepartmentList.idDepartment} columns={columns} dataSource={DepartmentList}/>
+            <Table rowKey={Hour => HourList.idHour} columns={columns} dataSource={HourList}/>
             {error ? (
                 <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
             ) : null}
@@ -67,4 +62,4 @@ const Department = (props) => {
     )
 };
 
-export default Department;
+export default Hour;
