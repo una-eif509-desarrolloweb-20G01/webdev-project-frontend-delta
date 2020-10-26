@@ -7,7 +7,7 @@ import './App.css';
 import AuthService from "./services/auth.service";
 import Login from "./components/Login";
 import Home from "./components/Home";
-import Department from "./components/Department";
+import Department from "./components/_Department";
 import Hour from "./components/Hour";
 import Signup from "./components/Signup";
 
