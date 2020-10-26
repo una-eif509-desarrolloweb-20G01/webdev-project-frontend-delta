@@ -1,6 +1,6 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
-import {Form, Input, Alert, Modal, Button, Table} from 'antd';
-import { Link , useHistory} from "react-router-dom";
+import {Form, Input, Alert, Modal, Button} from 'antd';
+import { useHistory} from "react-router-dom";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 import DepartmentService from "../services/department.service";
 
@@ -23,19 +23,17 @@ const tailLayout = {
     },
 };
 
-const initialDepartmentListState = [
+const initialDepartmentState = [
     {
-        "idDepartment": 0,
+        "idDepartment": null,
         "name": ""
     }
 ];
 
 const Department = (props) => {
-    //const [DepartmentList, setDepartmentList] = useState(initialDepartmentListState);
-    //const [error, setError] = useState(false);
 
     const [form] = Form.useForm();
-    const [DepartmentList, setDepartmentList] = useState(initialDepartmentListState);
+    const [department, setDepartment] = useState(initialDepartmentState);
     const [isNew, setIsNew] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
@@ -50,10 +48,10 @@ const Department = (props) => {
     const fillForm = useCallback(
         () => {
             form.setFieldsValue({
-                label: Department.name,
+                name: department.name,
             });
         },
-        [form, Department],
+        [form, department],
     );
 
     useLayoutEffect(() => {
@@ -63,36 +61,15 @@ const Department = (props) => {
 
     useEffect(() => {
         fillForm();
-        getAllPrioritiesMethod();
     }, [fillForm]);
 
-   /* useEffect(() => {
-        getAllPrioritiesMethod();
-        // eslint-disable-next-line 
-    },[]);*/
-
     /** Service methods **/
-    const getAllPrioritiesMethod = () => {
-        DepartmentService.getAll()
-            .then(response => {
-                setDepartmentList(response.data);
-                console.log(response.data);
-            })
-            .catch(err => {
-                console.log(err);
-                setError(err)
-                if (err.response.status === 401) {
-                    props.history.push("/login");
-                    window.location.reload();
-                }
-            });
-    }
 
     const retrieveDepartmentById = (idDepartment) => {
         if (idDepartment) {
             DepartmentService.get(idDepartment)
                 .then(response => {
-                    setDepartmentList(response.data)
+                    setDepartment(response.data)
                     console.log(response.data);
                 })
                 .catch(e => {
@@ -100,15 +77,15 @@ const Department = (props) => {
                     console.log(e);
                 });
         } else {
-            setDepartmentList(initialDepartmentListState);
+            setDepartment(initialDepartmentState);
         }
     };
 
     const saveUpdateForm = () => {
         if (isNew) {
-            DepartmentService.create(Department)
+            DepartmentService.create(department)
                 .then(response => {
-                    setDepartmentList(response.data);
+                    setDepartment(response.data);
                     setSubmitted(true);
                     form.resetFields();
                     console.log(response.data);
@@ -118,9 +95,9 @@ const Department = (props) => {
                     console.log(e);
                 });
         } else {
-            DepartmentService.update(Department)
+            DepartmentService.update(department)
                 .then(response => {
-                    setDepartmentList(response.data);
+                    setDepartment(response.data);
                     setSubmitted(true);
                     fillForm();
                     console.log(response.data);
@@ -136,8 +113,9 @@ const Department = (props) => {
         if (idDepartment) {
             DepartmentService.remove(idDepartment)
                 .then(response => {
-                    history.push("/department/list");
                     console.log(response.data);
+                    props.history.push("/departments");
+                    window.location.reload();
                 })
                 .catch(e => {
                     setError(true);
@@ -148,41 +126,19 @@ const Department = (props) => {
 
     /** Handle actions in the Form **/
 
-    /** General Methods **/
-    /*const columns = [
-        {
-            title: 'Department',
-            //render: (Department) => Department.name
-            render: (Department) =>
-                <Link
-                    to={"/departments/add/" + Department.idDepartment}
-                >
-                    {Department.name}
-                </Link>
-        }
-    ];
-
-    return (
-        <div>
-            <Table rowKey={DepartmentList => DepartmentList.idDepartment} columns={columns} dataSource={DepartmentList}/>
-            {error ? (
-                <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
-            ) : null}
-        </div>
-    )*/
     const handleInputChange = event => {
         let {name, value} = event.target;
-        setDepartmentList({...Department, [name]: value});
+        setDepartment({...department, [name]: value});
     };
 
     const handleClose = () => {
-        setDepartmentList(initialDepartmentListState);
+        setDepartment(initialDepartmentState);
         setSubmitted(false);
     };
 
     /** General Methods **/
     const onFinish = data => {
-        console.log(Department);
+        console.log(department);
         saveUpdateForm();
     };
 
@@ -194,49 +150,32 @@ const Department = (props) => {
         confirm({
             title: 'Do you Want to delete this Department?',
             icon: <ExclamationCircleOutlined/>,
-            content: 'Department ['.concat(Department.name).concat(']'),
+            content: 'Department ['.concat(department.name).concat(']'),
             onOk() {
-                deleteDepartment(Department.idDepartment);
-                props.history.push("/departments");
-                window.location.reload();
+                deleteDepartment(department.idDepartment);
             },
             onCancel() {
                 console.log('Cancel');
             },
         });
     }
-    const columns = [
-        {
-            title: 'Department',
-            render: (Department) => Department.name
-            /*render: (Department) =>
-                <Link
-                    to={"/departments/add/" + Department.idDepartment}
-                >
-                    {Department.name}
-                </Link>*/
-        }
-    ];
 
     return (
         <div>
             <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
-
-
                 <Form.Item
-                    name="nombre"
-                    label="Nombre"
+                    name="name"
+                    label="Name"
                     rules={[
                         {
                             required: true,
                         },
                     ]}
                 >   
-
                     <Input
-                        name="nombre"
+                        name="name"
                         onChange={handleInputChange}
-                        placeholder="nombre"
+                        placeholder="name"
                     />
                 </Form.Item>
 
@@ -247,11 +186,15 @@ const Department = (props) => {
                     <Button htmlType="button" onClick={onReset}>
                         Reset
                     </Button>
-                    <Button danger
-                            onClick={showConfirm}
-                    >
-                        Delete
-                    </Button>
+
+                    {isNew ? null : 
+                        <Button danger
+                                onClick={showConfirm}
+                        >
+                            Delete
+                        </Button>
+                    }
+                    
                 </Form.Item>
 
                 {submitted ? (

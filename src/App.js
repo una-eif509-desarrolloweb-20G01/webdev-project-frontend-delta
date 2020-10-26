@@ -37,16 +37,16 @@ function App() {
                         {
                             currentUser?(
                                 <>
-                                <Menu.Item key="2">
-                                    <a href="/departments" className="nav-link">
-                                        Departments
-                                    </a>
-                                </Menu.Item>
-                                <Menu.Item key="2">
-                                    <a href="/departments/add" className="nav-link">
-                                        Add Departments
-                                    </a>
-                                </Menu.Item>
+                                    <Menu.Item key="/departments">
+                                        <Link to={"/departments"}>
+                                            Departments
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="/departments/add">
+                                        <Link to={"/departments/add"}>
+                                            Add Departments
+                                        </Link>
+                                    </Menu.Item>
 
                                     <Menu.Item key="2">
                                         <a href="/login" className="nav-link" onClick={logOut}>
