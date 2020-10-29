@@ -11,6 +11,9 @@ import Department from "./components/Department";
 import DepartmentList from "./components/DepartmentList";
 import Hour from "./components/Hour";
 import Signup from "./components/Signup";
+import Timesheet from "./components/Timesheet";
+import TimesheetList from "./components/TimesheetList";
+
 
 function App() {
     const {Header, Content, Footer} = Layout;
@@ -37,6 +40,18 @@ function App() {
                         {
                             currentUser?(
                                 <>
+
+                                    <Menu.Item key="/timesheets">
+                                        <Link to={"/timesheets"}>
+                                            Timesheets
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="/timesheets/add">
+                                        <Link to={"/timesheets/add"}>
+                                            Add Timesheets
+                                        </Link>
+                                    </Menu.Item>
+
                                     <Menu.Item key="/departments">
                                         <Link to={"/departments"}>
                                             Departments
@@ -83,6 +98,10 @@ function App() {
                             <Route exact path="/signup" component={Signup}/>
                             <Route exact path="/departments/add" component={Department} />
                             <Route path="/departments/add/:id" component={Department} />
+                            <Route exact path="/departments" component={DepartmentList}/>
+                            <Route exact path="/timesheets" component={TimesheetList}/>
+                            <Route exact path="/timesheets/add" component={Timesheet} />
+                            <Route path="/timesheets/add/:id" component={Timesheet} />
                         </Switch>
                     </div>
                 </Content>
