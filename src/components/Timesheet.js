@@ -52,8 +52,8 @@ const Timesheet = (props) => {
         () => {
             form.setFieldsValue({
                 name: timesheet.name,
-                startDate: moment(timesheet.startDate).format("YYYY-MM-DD"),
-                endDate: moment(timesheet.endDate).format("YYYY-MM-DD"),
+                startDate: timesheet.startDate ? moment(timesheet.startDate).format("YYYY-MM-DD"):"",
+                endDate: timesheet.endDate ? moment(timesheet.endDate).format("YYYY-MM-DD"):"",
             });
         },
         [form, timesheet],

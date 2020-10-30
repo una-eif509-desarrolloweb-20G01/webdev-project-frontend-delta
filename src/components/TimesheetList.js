@@ -84,6 +84,15 @@ const Timesheet = (props) => {
             render: (Timesheet) =>
                 moment(Timesheet.endDate).format("YYYY-MM-DD")
           },
+          {
+            title: 'Details',
+            render: (Timesheet) =>
+              <Link
+                  to={"/timesheetsDetails/add/" + Timesheet.idTimesheet}
+              >
+                  Timesheet Detail
+              </Link>,
+          },
       ];
 
     return (
