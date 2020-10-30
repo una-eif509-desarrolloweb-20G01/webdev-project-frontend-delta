@@ -13,6 +13,7 @@ import Hour from "./components/Hour";
 import Signup from "./components/Signup";
 import Timesheet from "./components/Timesheet";
 import TimesheetList from "./components/TimesheetList";
+import TimesheetsDetails from "./components/TimesheetDetails";
 
 
 function App() {
@@ -102,6 +103,10 @@ function App() {
                             <Route exact path="/timesheets" component={TimesheetList}/>
                             <Route exact path="/timesheets/add" component={Timesheet} />
                             <Route path="/timesheets/add/:id" component={Timesheet} />
+                            <Route path="/timesheetsDetails/add/:id" component={TimesheetsDetails} />
+                            
+
+                            
                         </Switch>
                     </div>
                 </Content>
