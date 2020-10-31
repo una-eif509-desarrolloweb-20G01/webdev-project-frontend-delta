@@ -14,6 +14,8 @@ import Signup from "./components/Signup";
 import Timesheet from "./components/Timesheet";
 import TimesheetList from "./components/TimesheetList";
 import TimesheetsDetails from "./components/TimesheetDetails";
+import NotFound from "./components/NotFound";
+import AddHours from "./components/AddHours";
 
 
 function App() {
@@ -87,7 +89,7 @@ function App() {
                         }
                     </Menu>
                 </Header>
-                <Content style={{padding: '0 50px'}}>
+                <Content style={{padding: '0 50px', minHeight:'850px'}}>
                     <Breadcrumb style={{margin: '16px 0'}}>
                     </Breadcrumb>
                     <div className="site-layout-content">
@@ -104,6 +106,8 @@ function App() {
                             <Route exact path="/timesheets/add" component={Timesheet} />
                             <Route path="/timesheets/add/:id" component={Timesheet} />
                             <Route path="/timesheetsDetails/add/:id" component={TimesheetsDetails} />
+                            <Route path="/timesheetDetails/hours/:id" component={AddHours} />
+                            <Route component={NotFound}/>
                             
 
                             

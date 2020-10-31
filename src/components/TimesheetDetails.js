@@ -1,75 +1,40 @@
-import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
-import {Form, Input, Alert, Modal, Button} from 'antd';
-import { useHistory} from "react-router-dom";
-import {ExclamationCircleOutlined} from '@ant-design/icons';
+import React, {useState, useEffect, useLayoutEffect} from "react";
+import {Alert, Table, Button} from 'antd';
 import TimesheetService from "../services/timesheet.service";
 import moment from 'moment';
+import { Link } from "react-router-dom";
 
 
-const {confirm} = Modal;
-
-const layout = {
-    labelCol: {
-        span: 2,
-    },
-    wrapperCol: {
-        span: 8,
-    },
-};
-
-const tailLayout = {
-    wrapperCol: {
-        offset: 2,
-        span: 8,
-    },
-};
-
-const initialTimesheetState = [
+const initialTimesheetState = 
     {
         "idTimesheet": null,
         "name": "",
         "startDate": "",
-        "endDate": ""
-    }
-];
+        "endDate": "",
+        "timesheetDetailsList": []
+    };
 
-const Timesheet = (props) => {
+const TimesheetDetails = (props) => {
 
-    const [form] = Form.useForm();
     const [timesheet, setTimesheet] = useState(initialTimesheetState);
-    const [isNew, setIsNew] = useState(true);
-    const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
-    const history = useHistory();
+    const [departmentHours, setDepartmentHours] = useState({});
 
-    /**
-     * React Hooks
-     * https://reactjs.org/docs/hooks-reference.html
-     * 
-     * 
-     */
-    const fillForm = useCallback(
-        () => {
-            form.setFieldsValue({
-                name: timesheet.name,
-                startDate: timesheet.startDate ? moment(timesheet.startDate).format("YYYY-MM-DD"):"",
-                endDate: timesheet.endDate ? moment(timesheet.endDate).format("YYYY-MM-DD"):"",
-            });
-        },
-        [form, timesheet],
-    );
+    useEffect(()=> {
+        let dpts = {}
+        timesheet.timesheetDetailsList.forEach(x=>{
+            dpts[x.user.department.idDepartment] ? 
+                dpts[x.user.department.idDepartment] = { ...dpts[x.user.department.idDepartment], hours: x.hoursList.reduce((ac, x) => ac + x.hours, dpts[x.user.department.idDepartment].hours) } : 
+                dpts[x.user.department.idDepartment] = {name: x.user.department.name, hours: x.hoursList.reduce((ac, x) => ac + x.hours, 0) };
+        });
+        setDepartmentHours(dpts);
+    }, [timesheet])
 
     useLayoutEffect(() => {
-        setIsNew(!props.match.params.id);
         retrieveTimesheetById(props.match.params.id);
     }, [props.match.params.id]);
 
-    useEffect(() => {
-        fillForm();
-    }, [fillForm]);
-
     /** Service methods **/
-
     const retrieveTimesheetById = (idTimesheet) => {
         if (idTimesheet) {
             TimesheetService.get(idTimesheet)
@@ -84,95 +49,44 @@ const Timesheet = (props) => {
         } else {
             setTimesheet(initialTimesheetState);
         }
-    };
+    }; 
+    //{}
 
-    const saveUpdateForm = () => {
-        if (isNew) {
-            TimesheetService.create(timesheet)
-                .then(response => {
-                    setTimesheet(response.data);
-                    setSubmitted(true);
-                    form.resetFields();
-                    console.log(response.data);
-                })
-                .catch(e => {
-                    setError(true);
-                    console.log(e);
-                });
-        } else {
-            TimesheetService.update(timesheet)
-                .then(response => {
-                    setTimesheet(response.data);
-                    setSubmitted(true);
-                    fillForm();
-                    console.log(response.data);
-                })
-                .catch(e => {
-                    setError(true);
-                    console.log(e);
-                });
-        }
-    };
-
-    const deleteTimesheet = (idTimesheet) => {
-        if (idTimesheet) {
-            TimesheetService.remove(idTimesheet)
-                .then(response => {
-                    console.log(response.data);
-                    props.history.push("/timesheets");
-                    window.location.reload();
-                })
-                .catch(e => {
-                    setError(true);
-                    console.log(e);
-                });
-        }
-    }
-
-    /** Handle actions in the Form **/
-
-    const handleInputChange = event => {
-        let {name, value} = event.target;
-        setTimesheet({...timesheet, [name]: value});
-    };
-
-    const handleClose = () => {
-        setTimesheet(initialTimesheetState);
-        setSubmitted(false);
-    };
-
-    /** General Methods **/
-    const onFinish = data => {
-        console.log(timesheet);
-        saveUpdateForm();
-    };
-
-    const onReset = () => {
-        form.resetFields();
-    };
-
-    const showConfirm = () => {
-        confirm({
-            title: 'Do you Want to delete this Timesheet?',
-            icon: <ExclamationCircleOutlined/>,
-            content: 'Timesheet ['.concat(timesheet.name).concat(']'),
-            onOk() {
-                deleteTimesheet(timesheet.idTimesheet);
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-    }
+    const columns = [
+        {
+          title: 'Department',
+          render: (department) => department.name
+        },
+        {
+          title: 'Hours',
+          render: (department) => department.hours
+        },
+      ];
 
     return (
-        <div>
-            <label>Nombre: {timesheet.name} </label><br></br>
-            <label>Start Date: {moment(timesheet.startDate).format("YYYY-MM-DD")} </label><br></br>
-            <label>End Date: {moment(timesheet.endDate).format("YYYY-MM-DD")} </label><br></br>
-        </div>
-
+        <>
+            <div>
+                <label>Nombre: {timesheet.name} </label><br></br>
+                <label>Start Date: {moment(timesheet.startDate).format("YYYY-MM-DD")} </label><br></br>
+                <label>End Date: {moment(timesheet.endDate).format("YYYY-MM-DD")} </label><br></br>
+            </div>
+            <div>
+                <h3>History</h3>
+                <Table rowKey={department => department.name} columns={columns} dataSource={Object.values(departmentHours)}/>
+                {error ? (
+                    <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
+                ) : null}
+            </div>
+            <Button type="primary" htmlType="button">
+                <Link
+                    to={"/timesheetDetails/hours/" + timesheet.idTimesheet}
+                >
+                    Add hours to this timesheet 
+                </Link>
+            </Button>
+            
+        </>
     )
 };
 
-export default Timesheet;
+export default TimesheetDetails;

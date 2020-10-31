@@ -39,7 +39,7 @@ const Timesheet = (props) => {
             .catch(err => {
                 console.log(err);
                 setError(err)
-                if (err.response.status === 401) {
+                if (err.response && err.response.status === 401) {
                     props.history.push("/login");
                     window.location.reload();
                 }
@@ -97,7 +97,7 @@ const Timesheet = (props) => {
 
     return (
         <div>
-            <Table rowKey={Timesheet => TimesheetList.idTimesheet} columns={columns} dataSource={TimesheetList}/>
+            <Table rowKey={Timesheet => Timesheet.idTimesheet} columns={columns} dataSource={TimesheetList}/>
             {error ? (
                 <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
             ) : null}
