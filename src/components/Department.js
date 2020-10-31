@@ -1,6 +1,5 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
 import {Form, Input, Alert, Modal, Button} from 'antd';
-import { useHistory} from "react-router-dom";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 import DepartmentService from "../services/department.service";
 
@@ -37,7 +36,6 @@ const Department = (props) => {
     const [isNew, setIsNew] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
-    const history = useHistory();
 
     /**
      * React Hooks

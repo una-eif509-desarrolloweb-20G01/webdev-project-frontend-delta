@@ -1,6 +1,5 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
 import {Form, Input, Alert, Modal, Button} from 'antd';
-import { useHistory} from "react-router-dom";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 import TimesheetService from "../services/timesheet.service";
 import moment from 'moment';
@@ -40,7 +39,6 @@ const Timesheet = (props) => {
     const [isNew, setIsNew] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
-    const history = useHistory();
 
     /**
      * React Hooks

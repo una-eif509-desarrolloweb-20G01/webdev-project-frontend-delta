@@ -69,7 +69,7 @@ const Signup = (props) => {
     };
 
     const handleSelectChange = value => {
-        setUser({...user, ["department"]: departments.find(department=>department.idDepartment == value)});
+        setUser({...user, department: departments.find(department=>department.idDepartment === value)});
     }
 
     /** General Methods **/
