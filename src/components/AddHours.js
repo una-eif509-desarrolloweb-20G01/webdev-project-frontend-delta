@@ -1,11 +1,13 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
-import {Form, Input, Alert, Modal, Button} from 'antd';
 import { useHistory} from "react-router-dom";
-import {ExclamationCircleOutlined} from '@ant-design/icons';
 import TimesheetService from "../services/timesheet.service";
+import DepartmentService from "../services/department.service";
+import {Form, Alert, Input, Button,Modal, Row, Col, Select} from 'antd';
+import {EyeInvisibleOutlined, EyeTwoTone, UserOutlined,ExclamationCircleOutlined} from '@ant-design/icons';
+import UserService from "../services/user.service";
 import moment from 'moment';
 
-/*const {confirm} = Modal;
+const {confirm} = Modal;
 
 const layout = {
     labelCol: {
@@ -22,7 +24,7 @@ const tailLayout = {
         span: 8,
     },
 };
-
+/*
 const initialTimesheetDetailsState = [
     {
         "idTimesheetDetails": null,
@@ -36,18 +38,54 @@ const initialTimesheetDetailsState = [
             "endDate": ""
         }
     }
+];*/
+const initialTimesheetState = [
+    {
+        "idTimesheet": null,
+        "name": "",
+        "startDate": "",
+        "endDate": ""
+    }
 ];
-*/
+
+
 const AddHours = (props) => {
-/*
+
     const [form] = Form.useForm();
-    const [timesheetDetails, setTimesheetDetails] = useState(initialTimesheetDetailsState);
     const [isNew, setIsNew] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
+    const [departments, setDepartments] = useState([]);
+    const [timesheet, setTimesheet] = useState(initialTimesheetState);
+    const [user, setUser] = useState();
 
-    /
-    const fillForm = useCallback(
+    const getDepartments = () => {
+        DepartmentService.getAll()
+            .then(response => {
+                console.log(response.data);
+                setDepartments(response.data);
+            })
+            .catch(err => {
+                console.log(err);
+                setError(err)
+            });
+    }
+
+    /*const getTimesheet = () => {
+        TimesheetService.getAll()
+            .then(response => {
+                console.log(response.data);
+                setTimesheet(response.data);
+            })
+            .catch(err => {
+                console.log(err);
+                setError(err)
+            });
+    }*/
+    
+
+
+    /*const fillForm = useCallback(
         () => {
             form.setFieldsValue({
                 name: timesheet.name,
@@ -56,19 +94,20 @@ const AddHours = (props) => {
             });
         },
         [form, timesheet],
-    );
+    );*/
 
-    useLayoutEffect(() => {
+    /*useLayoutEffect(() => {
         setIsNew(!props.match.params.id);
         retrieveTimesheetById(props.match.params.id);
-    }, [props.match.params.id]);
+    }, [props.match.params.id]);*/
 
     useEffect(() => {
-        fillForm();
-    }, [fillForm]);
+        getDepartments();
+        //getTimesheet();
+    }, []);
 
 
-    const retrieveTimesheetById = (idTimesheet) => {
+    /*const retrieveTimesheetById = (idTimesheet) => {
         if (idTimesheet) {
             TimesheetService.get(idTimesheet)
                 .then(response => {
@@ -82,9 +121,9 @@ const AddHours = (props) => {
         } else {
             setTimesheet(initialTimesheetState);
         }
-    };
+    };*/
 
-    const saveUpdateForm = () => {
+    /*const saveUpdateForm = () => {
         if (isNew) {
             TimesheetService.create(timesheet)
                 .then(response => {
@@ -110,9 +149,9 @@ const AddHours = (props) => {
                     console.log(e);
                 });
         }
-    };
+    };*/
 
-    const deleteTimesheet = (idTimesheet) => {
+    /*const deleteTimesheet = (idTimesheet) => {
         if (idTimesheet) {
             TimesheetService.remove(idTimesheet)
                 .then(response => {
@@ -125,21 +164,31 @@ const AddHours = (props) => {
                     console.log(e);
                 });
         }
+    }*/
+
+
+   /*const handleInputChange = event => {
+        let {name, value} = event.target;
+        setTimesheet({...timesheet, [name]: value});
+    };*/
+
+    const handleClose = () => {
+        //setTimesheet(initialTimesheetState);
+        setSubmitted(false);
+    };
+    const handleSelectChangeTimesheet = value => {
+        setTimesheet({...timesheet,timesheet: timesheet.find(timesheet=>timesheet.idTimesheet === value)});
     }
-
-
+    const handleSelectChange = value => { 
+        setDepartments({...departments, department: departments.find(department=>department.idDepartment === value)});
+    }
     const handleInputChange = event => {
         let {name, value} = event.target;
         setTimesheet({...timesheet, [name]: value});
     };
-
-    const handleClose = () => {
-        setTimesheet(initialTimesheetState);
-        setSubmitted(false);
-    };
     const onFinish = data => {
-        console.log(timesheet);
-        saveUpdateForm();
+        console.log("fin");
+        //saveUpdateForm();
     };
 
     const onReset = () => {
@@ -148,83 +197,192 @@ const AddHours = (props) => {
 
     const showConfirm = () => {
         confirm({
-            title: 'Do you Want to delete this Timesheet?',
+            title: 'Do you Want to delete this Hour?',
             icon: <ExclamationCircleOutlined/>,
-            content: 'Timesheet ['.concat(timesheet.name).concat(']'),
-            onOk() {
+            content: 'Hour []',
+            /*onOk() {
                 deleteTimesheet(timesheet.idTimesheet);
             },
             onCancel() {
                 console.log('Cancel');
-            },
+            },*/
         });
-    }*/
+    }
 
     return (  
-       /*
+       
         <div>
             <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
-                <Form.Item
-                    name="timesheet"
-                    label="Time Sheet"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                    disabled 
-                >
-                    <Input
+
+                    <Form.Item 
                         name="timesheet"
-                        disabled={true}
-                        placeholder="Time Sheet"
-                    />
-                </Form.Item>
-                <Form.Item
-                    name="lastName"
-                    label="Last Name"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input
-                        name="lastName"
-                        onChange={handleInputChange}
-                        placeholder="Last Name"
-                    />
-                </Form.Item>
-                <Form.Item
-                    name="email"
-                    label="Email"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input
-                        name="email"
-                        onChange={handleInputChange}
-                        placeholder="Email"
-                    />
-                </Form.Item>
-                <Form.Item
-                    name="username"
-                    label="User Name"
-                    rules={[
-                        {
-                            required: true,
-                        },
-                    ]}
-                >
-                    <Input
-                        name="username"
-                        prefix={<UserOutlined className="site-form-item-icon"/>}
-                        onChange={handleInputChange}
-                        placeholder="User Name"
-                    />
+                        label="Timesheet" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="timesheet"
+                                onChange={handleInputChange}
+                                placeholder="Timesheet"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="department"
+                        label="Department" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                            <Select 
+                                name="department"
+                                onChange={handleSelectChange}
+                                placeholder="Select your department "
+                                options={departments.map(department=> ({value: department.idDepartment, label: department.name}) ) }
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="monday"
+                        label="Monday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="monday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="monday"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="tuesday"
+                        label="Tuesday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="tuesday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="Tuesday"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="wednesday"
+                        label="Wednesday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="wednesday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="Wednesday"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="thursday"
+                        label="Thursday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="thursday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="Thursday"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="friday"
+                        label="Friday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="friday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="Friday"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="saturday"
+                        label="Saturday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="saturday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="Saturday"
+                            />
+                    </Form.Item>
+
+                    <Form.Item 
+                        name="sunday"
+                        label="Sunday" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                name="sunday"
+                                type="number"
+                                onChange={handleInputChange}
+                                placeholder="Sunday"
+                            />
+                    </Form.Item>
+                    
+
+
+                    <Form.Item {...tailLayout}>
+                    <Button type="primary" htmlType="submit">
+                        Submit
+                    </Button>
+                    <Button htmlType="button" onClick={onReset}>
+                        Reset
+                    </Button>
+
+                    {isNew ? null : 
+                        <Button danger
+                                onClick={showConfirm}
+                        >
+                            Delete
+                        </Button>
+                    }
+                    
                 </Form.Item>
 
                 {submitted ? (
@@ -235,9 +393,7 @@ const AddHours = (props) => {
                     <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
                 ) : null}
             </Form>
-        </div>*/
-
-        <h1>In progress</h1>
+        </div>
     );
 }
 
