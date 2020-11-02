@@ -1,8 +1,10 @@
-import React, {useState} from "react";
-import {Form, Alert, Input, Button, Row, Col} from 'antd';
+import React, {useState, useEffect} from "react";
+import {Form, Alert, Input, Button, Row, Col, Select} from 'antd';
 import {EyeInvisibleOutlined, EyeTwoTone, UserOutlined} from '@ant-design/icons';
 
 import UserService from "../services/user.service";
+import DepartmentService from "../services/department.service";
+
 
 const formItemLayout = {
     labelCol: { span: 6 },
@@ -16,14 +18,30 @@ const initialUserState = {
     "lastName" : "",
     "email" : "",
     "username": "",
-    "password": ""
+    "password": "",
+    "department":{"idDepartment": null, "name":""}
 };
 
 const Signup = (props) => {
     const [form] = Form.useForm();
     const [user, setUser] = useState(initialUserState);
     const [error, setError] = useState(false);
+    const [departments, setDepartments] = useState([]);
 
+    const getDepartments = () => {
+        DepartmentService.getAll()
+            .then(response => {
+                setDepartments(response.data);
+            })
+            .catch(err => {
+                console.log(err);
+                setError(err)
+            });
+    }
+
+    useEffect(() => {
+        getDepartments();
+    }, []);
     /**
      * React Hooks
      * https://reactjs.org/docs/hooks-reference.html
@@ -49,6 +67,10 @@ const Signup = (props) => {
         let {name, value} = event.target;
         setUser({...user, [name]: value});
     };
+
+    const handleSelectChange = value => {
+        setUser({...user, department: departments.find(department=>department.idDepartment === value)});
+    }
 
     /** General Methods **/
 
@@ -142,6 +164,21 @@ const Signup = (props) => {
                             placeholder="Your password"
                             iconRender={visible => (visible ? <EyeTwoTone/> : <EyeInvisibleOutlined/>)}
                         />
+                    </Form.Item>
+                    <Form.Item 
+                        name="department"
+                        label="Department" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                            <Select 
+                                name="department"
+                                onChange={handleSelectChange}
+                                placeholder="Select your department "
+                                options={departments.map(department=> ({value: department.idDepartment, label: department.name}) ) }
+                            />
                     </Form.Item>
                     <Form.Item wrapperCol={{ ...formItemLayout.wrapperCol, offset: formItemLayout.labelCol.span }}>
                         <Button type="primary" htmlType="submit">

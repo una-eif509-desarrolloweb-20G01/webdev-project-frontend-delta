@@ -1,11 +1,11 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
 import {Form, Input, Alert, Modal, Button} from 'antd';
+import { useHistory} from "react-router-dom";
 import {ExclamationCircleOutlined} from '@ant-design/icons';
 import TimesheetService from "../services/timesheet.service";
 import moment from 'moment';
 
-
-const {confirm} = Modal;
+/*const {confirm} = Modal;
 
 const layout = {
     labelCol: {
@@ -23,35 +23,36 @@ const tailLayout = {
     },
 };
 
-const initialTimesheetState = [
+const initialTimesheetDetailsState = [
     {
-        "idTimesheet": null,
-        "name": "",
-        "startDate": "",
-        "endDate": ""
+        "idTimesheetDetails": null,
+        "paid": false,
+        "approved": false,
+        "hourstList": [],
+        "timesheet": {
+            "idTimesheet": null,
+            "name": "",
+            "startDate": "",
+            "endDate": ""
+        }
     }
 ];
-
-const Timesheet = (props) => {
-
+*/
+const AddHours = (props) => {
+/*
     const [form] = Form.useForm();
-    const [timesheet, setTimesheet] = useState(initialTimesheetState);
+    const [timesheetDetails, setTimesheetDetails] = useState(initialTimesheetDetailsState);
     const [isNew, setIsNew] = useState(true);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState(false);
 
-    /**
-     * React Hooks
-     * https://reactjs.org/docs/hooks-reference.html
-     * 
-     * 
-     */
+    /
     const fillForm = useCallback(
         () => {
             form.setFieldsValue({
                 name: timesheet.name,
-                startDate: timesheet.startDate ? moment(timesheet.startDate).format("YYYY-MM-DD"):"",
-                endDate: timesheet.endDate ? moment(timesheet.endDate).format("YYYY-MM-DD"):"",
+                startDate: moment(timesheet.startDate).format("YYYY-MM-DD"),
+                endDate: moment(timesheet.endDate).format("YYYY-MM-DD"),
             });
         },
         [form, timesheet],
@@ -66,7 +67,6 @@ const Timesheet = (props) => {
         fillForm();
     }, [fillForm]);
 
-    /** Service methods **/
 
     const retrieveTimesheetById = (idTimesheet) => {
         if (idTimesheet) {
@@ -127,7 +127,6 @@ const Timesheet = (props) => {
         }
     }
 
-    /** Handle actions in the Form **/
 
     const handleInputChange = event => {
         let {name, value} = event.target;
@@ -138,8 +137,6 @@ const Timesheet = (props) => {
         setTimesheet(initialTimesheetState);
         setSubmitted(false);
     };
-
-    /** General Methods **/
     const onFinish = data => {
         console.log(timesheet);
         saveUpdateForm();
@@ -161,78 +158,73 @@ const Timesheet = (props) => {
                 console.log('Cancel');
             },
         });
-    }
+    }*/
 
-    return (
+    return (  
+       /*
         <div>
             <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
-            <Form.Item
-                    name="name"
-                    label="Name"
+                <Form.Item
+                    name="timesheet"
+                    label="Time Sheet"
                     rules={[
                         {
                             required: true,
                         },
                     ]}
-                >   
+                    disabled 
+                >
                     <Input
-                        name="name"
-                        onChange={handleInputChange}
-                        placeholder="name"
+                        name="timesheet"
+                        disabled={true}
+                        placeholder="Time Sheet"
                     />
                 </Form.Item>
                 <Form.Item
-                    name="startDate"
-                    label="Start date"
+                    name="lastName"
+                    label="Last Name"
                     rules={[
                         {
                             required: true,
                         },
                     ]}
-                >   
+                >
                     <Input
-                        name="startDate"
-                        type="date"
-                        format="YYYY-MM-DD"
+                        name="lastName"
                         onChange={handleInputChange}
-                        placeholder="Start date"
+                        placeholder="Last Name"
                     />
                 </Form.Item>
                 <Form.Item
-                    name="endDate"
-                    label="End date"
+                    name="email"
+                    label="Email"
                     rules={[
                         {
                             required: true,
                         },
                     ]}
-                >   
+                >
                     <Input
-                        name="endDate"
-                        type="date"
-                        format="YYYY-MM-DD"
+                        name="email"
                         onChange={handleInputChange}
-                        placeholder="endDate"
+                        placeholder="Email"
                     />
-                    
                 </Form.Item>
-
-                <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">
-                        Submit
-                    </Button>
-                    <Button htmlType="button" onClick={onReset}>
-                        Reset
-                    </Button>
-
-                    {isNew ? null : 
-                        <Button danger
-                                onClick={showConfirm}
-                        >
-                            Delete
-                        </Button>
-                    }
-                    
+                <Form.Item
+                    name="username"
+                    label="User Name"
+                    rules={[
+                        {
+                            required: true,
+                        },
+                    ]}
+                >
+                    <Input
+                        name="username"
+                        prefix={<UserOutlined className="site-form-item-icon"/>}
+                        onChange={handleInputChange}
+                        placeholder="User Name"
+                    />
                 </Form.Item>
 
                 {submitted ? (
@@ -243,11 +235,12 @@ const Timesheet = (props) => {
                     <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
                 ) : null}
             </Form>
-            
-            
-        </div>
+        </div>*/
 
-    )
-};
+        <h1>In progress</h1>
+    );
+}
 
-export default Timesheet;
+
+ 
+export default AddHours;
