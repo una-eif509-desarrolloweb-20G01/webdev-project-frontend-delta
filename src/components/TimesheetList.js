@@ -93,6 +93,15 @@ const Timesheet = (props) => {
                   Timesheet Detail
               </Link>,
           },
+          {
+            title: 'Pay',
+            render: (Timesheet) =>
+              <Link
+                  to={"/timesheets/pay/" + Timesheet.idTimesheet}
+              >
+                  Pay timesheet
+              </Link>,
+          },
       ];
 
     return (

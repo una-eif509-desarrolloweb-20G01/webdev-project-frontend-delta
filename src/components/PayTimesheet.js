@@ -1,13 +1,9 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
 import TimesheetService from "../services/timesheet.service";
 import DepartmentService from "../services/department.service";
-import {Form, Alert, Input, Button,Modal, Select, InputNumber} from 'antd';
-import {ExclamationCircleOutlined} from '@ant-design/icons';
+import {Form, Alert, Input, Button, Select, Table} from 'antd';
 import AuthService from "../services/auth.service";
-import moment from 'moment';
-import timesheetDetailsService from "../services/timesheetDetails.service";
 
-const {confirm} = Modal;
 
 const layout = {
     labelCol: {
@@ -36,7 +32,7 @@ const initialTimesheetState = [
 ];
 
 
-const AddHours = (props) => {
+const PayTimesheet = (props) => {
 
     const [form] = Form.useForm();
     const [submitted, setSubmitted] = useState(false);
@@ -44,8 +40,7 @@ const AddHours = (props) => {
     const [departments, setDepartments] = useState([]);
     const [timesheet, setTimesheet] = useState(initialTimesheetState);
     const [user, setUser] = useState(null);
-    const [dateRanges, setDateRanges] = useState([]);
-    const [posTimesheetDetailUser, setPosTimesheetDetailUser] = useState(null);
+    const [selectedRowKeys, setSelectedRows] = useState([]);
 
     const getDepartments = () => {
         DepartmentService.getAll()
@@ -63,20 +58,15 @@ const AddHours = (props) => {
             TimesheetService.get(idTimesheet)
                 .then(response => {
                     setTimesheet(response.data);
-                    console.log(response.data);                     
-
-                    const start = moment(response.data.startDate);
-                    const end = moment(response.data.endDate);
-
-                    const current = start.clone();
-                    const result = [];
-
-                    while (current.isBefore(end)) {
-                        result.push(current.format("YYYY-MM-DD"));
-                        current.add(1, "day");
-                    }
-                    setDateRanges(result);
-                    
+                    console.log(response.data);
+                    let sel = [];
+                    if(response.data.timesheetDetailsList){
+                        response.data.timesheetDetailsList.forEach(x=>{
+                            if(x.paid===true)
+                                sel.push(x.idTimesheetDetails)
+                        })
+                    }    
+                    setSelectedRows(sel);
                 })
                 .catch(e => {
                     setError(true);
@@ -107,34 +97,16 @@ const AddHours = (props) => {
 
     const fillForm = useCallback(
         () => {
-            const pos = timesheet.timesheetDetailsList && user? timesheet.timesheetDetailsList.findIndex(x=>x.user.idUser === user.idUser) : null;
-            if (pos===-1){
-                let copy = {...timesheet}
-                copy.timesheetDetailsList.push({
-                    approved: false,
-                    hoursList: [],
-                    idTimesheetDetails: null,
-                    paid: false,
-                    user: user,
-                })
-                setTimesheet(copy);
-            }else{
-                setPosTimesheetDetailUser(pos);
-            }
-            
             let fieldvalues={
                 department: user? user.department.idDepartment: '',
-                timesheet: timesheet? timesheet.name : ''
-            };
-            if(pos!==null && pos!== -1 && timesheet.timesheetDetailsList && timesheet.timesheetDetailsList[pos].hoursList){
-                timesheet.timesheetDetailsList[pos].hoursList.forEach(element => {
-                    fieldvalues[element.date]=element.hours;
-                });
-            }
+                timesheet: timesheet? timesheet.name : '',
+                user: user? user.username : ''
+            };        
             form.setFieldsValue(fieldvalues);
+            
         },
         // eslint-disable-next-line
-        [form, timesheet, user, dateRanges],
+        [form, timesheet, user],
     );
 
     useEffect(() => {
@@ -155,59 +127,61 @@ const AddHours = (props) => {
             });
     };
 
-    const deleteTimesheetDetail = (idTimesheetDetail) => {
-        if (idTimesheetDetail) {
-            timesheetDetailsService.remove(idTimesheetDetail)
-                .then(response => {
-                    console.log(response.data);
-                    props.history.push("/timesheets");
-                    window.location.reload();
-                })
-                .catch(e => {
-                    setError(true);
-                    console.log(e);
-                });
-        }
-    }
-
     const handleClose = () => {
-        //setTimesheet(initialTimesheetState);
         setSubmitted(false);
     };
-    
-    const handleHourChange = name => value => {
-        let updated = {...timesheet}
-        let hourpos = updated.timesheetDetailsList[posTimesheetDetailUser].hoursList.findIndex(x=>x.date === name);
-        if(hourpos===-1){
-            updated.timesheetDetailsList[posTimesheetDetailUser].hoursList.push({hours: value, date: name});
-        }else{
-            updated.timesheetDetailsList[posTimesheetDetailUser].hoursList[hourpos].hours = value;
-        }        
-        setTimesheet(updated);
+
+    const columns = [
+        {
+            title: 'EmployeeId',
+            render: tsd => tsd.user.idUser
+        },
+        {
+            title: 'Employee',
+            render: tsd => `${tsd.user.firstName} ${tsd.user.lastName}`
+        },
+        {
+            title: 'Worked Hours',
+            render: tsd => tsd.hoursList.reduce((ac,x)=>ac+x.hours,0)
+        },
+    ];
+
+    // rowSelection object indicates the need for row selection
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedRows(selectedRowKeys)
+            timesheet.timesheetDetailsList.forEach(x=> selectedRowKeys.includes(x.idTimesheetDetails)? x.paid=true : x.paid=false );
+            console.log(timesheet.timesheetDetailsList);
+        },
+        selectedRowKeys,
+        type: 'checkbox'
     };
+
     const onFinish = data => {
         console.log("fin");
         saveUpdateForm();
     };
-
-    const showConfirm = () => {
-        confirm({
-            title: 'Do you Want to delete these hours for timesheet "'+timesheet.name+'"?',
-            icon: <ExclamationCircleOutlined/>,
-            onOk() {
-                deleteTimesheetDetail(timesheet.timesheetDetailsList[posTimesheetDetailUser].idTimesheetDetails);
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-    }
 
     return (  
        
         <div>
             <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
 
+                    <Form.Item 
+                        name="user"
+                        label="User" 
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}>
+                           
+                            <Input
+                                disabled
+                                name="user"
+                                placeholder="User"
+                            />
+                    </Form.Item>
                     <Form.Item 
                         name="timesheet"
                         label="Timesheet" 
@@ -239,36 +213,21 @@ const AddHours = (props) => {
                                 options={departments.map(department=> ({value: department.idDepartment, label: department.name}) ) }
                             />
                     </Form.Item>
-                    {dateRanges.map((date, index)=>
-                        <Form.Item 
-                            key={index}
-                            name={date}
-                            label={date}
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}>
-                            
-                                <InputNumber
-                                    name={date}
-                                    type={date}
-                                    onChange={handleHourChange(date)}
-                                />
-                        </Form.Item>
-                    )}      
+
+                    <Table
+                        rowSelection={{
+                            ...rowSelection,
+                        }}
+                        columns={columns}
+                        dataSource={timesheet.timesheetDetailsList}
+                        rowKey={tsd => tsd.idTimesheetDetails}
+                    />
+                   
                     
                     <Form.Item {...tailLayout}>
                         <Button type="primary" htmlType="submit">
-                            Submit
+                            Pay Marked
                         </Button>
-
-                        <Button danger
-                                onClick={showConfirm}
-                        >
-                            Delete
-                        </Button>
-                        
                     </Form.Item>
 
                 {submitted ? (
@@ -285,4 +244,4 @@ const AddHours = (props) => {
 
 
  
-export default AddHours;
+export default PayTimesheet;

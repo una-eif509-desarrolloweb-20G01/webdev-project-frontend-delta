@@ -16,6 +16,7 @@ import TimesheetList from "./components/TimesheetList";
 import TimesheetsDetails from "./components/TimesheetDetails";
 import NotFound from "./components/NotFound";
 import AddHours from "./components/AddHours";
+import PayTimesheet from "./components/PayTimesheet";
 
 
 function App() {
@@ -107,6 +108,7 @@ function App() {
                             <Route path="/timesheets/add/:id" component={Timesheet} />
                             <Route path="/timesheetsDetails/add/:id" component={TimesheetsDetails} />
                             <Route path="/timesheetDetails/hours/:id" component={AddHours} />
+                            <Route path="/timesheets/pay/:id" component={PayTimesheet} />
                             <Route component={NotFound}/>
                             
 
