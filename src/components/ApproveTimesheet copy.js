@@ -1,10 +1,14 @@
 import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
 import TimesheetService from "../services/timesheet.service";
 import DepartmentService from "../services/department.service";
-import {Form, Alert, Input, Button, Select, Table} from 'antd';
+
+import TimesheetDetailsService from "../services/timesheetDetails.service";
+
+import {Form, Alert, Input, Button, Select, Table,Modal} from 'antd';
+import {ExclamationCircleOutlined} from '@ant-design/icons';
 import AuthService from "../services/auth.service";
 
-
+const {confirm} = Modal;
 const layout = {
     labelCol: {
         span: 2,
@@ -62,7 +66,7 @@ const ApproveTimesheet = (props) => {
                     let sel = [];
                     if(response.data.timesheetDetailsList){
                         response.data.timesheetDetailsList.forEach(x=>{
-                            if(x.approved===true)
+                            if(x.paid===true)
                                 sel.push(x.idTimesheetDetails)
                         })
                     }    
@@ -126,10 +130,43 @@ const ApproveTimesheet = (props) => {
                 console.log(e);
             });
     };
+    const update_approve = (item,estado) => {
+
+        if(estado == "approve" ){
+            TimesheetDetailsService.update("{idTimesheetDetails:"+item+",approved:true}")
+            .then(response => {
+                setTimesheet(response.data);
+                setSubmitted(true);
+                fillForm();
+                console.log(response.data);
+            })
+            .catch(e => {
+                setError(true);
+                console.log(e);
+            });
+        }else{
+            TimesheetDetailsService.update("{idTimesheetDetails:"+item+",approved:false}")
+            .then(response => {
+                setTimesheet(response.data);
+                setSubmitted(true);
+                fillForm();
+                console.log(response.data);
+            })
+            .catch(e => {
+                setError(true);
+                console.log(e);
+            });
+        }
+        
+        
+    };
+
 
     const handleClose = () => {
         setSubmitted(false);
     };
+
+    
 
     const columns = [
         {
@@ -144,28 +181,66 @@ const ApproveTimesheet = (props) => {
             title: 'Worked Hours',
             render: tsd => tsd.hoursList.reduce((ac,x)=>ac+x.hours,0)
         },
+        {
+            title: 'Approve',
+            render: tsd =>
+            <Button type="primary" onClick={(e) => showConfirm(tsd.idTimesheetDetails)}>
+            YES
+            </Button>
+            ,
+          },
+          {
+            title: '',
+            render: tsd =>
+            <Button type="primary" onClick={(e) => showConfirm_no(tsd.idTimesheetDetails)}>
+            NO
+            </Button>
+            ,
+          },
     ];
 
-    // rowSelection object indicates the need for row selection
-    const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedRows(selectedRowKeys)
-            timesheet.timesheetDetailsList.forEach(x=> selectedRowKeys.includes(x.idTimesheetDetails)? x.approved=true : x.approved=false );
-            console.log(timesheet.timesheetDetailsList);
-        },
-        selectedRowKeys,
-        type: 'checkbox'
-    };
 
-    const onFinish = data => {
+    /*const onFinish = data => {
         console.log("fin");
         saveUpdateForm();
-    };
+    };*/
+
+
+    const showConfirm = (item) => {
+        confirm({
+            title: 'Do you Want to approve this timesheet?',
+            icon: <ExclamationCircleOutlined/>,
+            content: 'Approve Worked Hours',
+            onOk() {
+                //deleteDepartment(department.idDepartment);
+                update_approve(item,"approve");
+                console.log(item); //idTimesheetDetails
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    }
+    const showConfirm_no = (item) => {
+        confirm({
+            title: 'Do you Want to Disapprove this timesheet?',
+            icon: <ExclamationCircleOutlined/>,
+            content: 'Disapprove Worked Hours',
+            onOk() {
+                //deleteDepartment(department.idDepartment);
+                update_approve(item,"disapprove");
+                console.log(item);
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
+    }
 
     return (  
        
         <div>
-            <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
+            <Form {...layout} form={form} name="control-hooks" onFinish={showConfirm}>
 
                     <Form.Item 
                         name="user"
@@ -215,20 +290,13 @@ const ApproveTimesheet = (props) => {
                     </Form.Item>
 
                     <Table
-                        rowSelection={{
-                            ...rowSelection,
-                        }}
                         columns={columns}
                         dataSource={timesheet.timesheetDetailsList}
                         rowKey={tsd => tsd.idTimesheetDetails}
                     />
                    
                     
-                    <Form.Item {...tailLayout}>
-                        <Button type="primary" htmlType="submit">
-                            Approve
-                        </Button>
-                    </Form.Item>
+                    
 
                 {submitted ? (
                     <Alert message="Timesheet Saved" type="success" showIcon closable afterClose={handleClose}/>
