@@ -111,6 +111,15 @@ const Timesheet = (props) => {
                   Approve timesheet
               </Link>,
           },
+          {
+            title: 'Report',
+            render: (Timesheet) =>
+              <Link
+                  to={"/timesheets/report/" + Timesheet.idTimesheet}
+              >
+                  Report timesheet
+              </Link>,
+          },
       ];
 
     return (
