@@ -102,6 +102,15 @@ const Timesheet = (props) => {
                   Pay timesheet
               </Link>,
           },
+          {
+            title: 'Approve',
+            render: (Timesheet) =>
+              <Link
+                  to={"/timesheets/approve/" + Timesheet.idTimesheet}
+              >
+                  Approve timesheet
+              </Link>,
+          },
       ];
 
     return (
