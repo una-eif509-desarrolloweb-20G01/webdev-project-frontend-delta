@@ -66,7 +66,7 @@ const TimesheetDetails = (props) => {
     return (
         <>
             <div>
-                <label>Nombre: {timesheet.name} </label><br></br>
+                <label>Name: {timesheet.name} </label><br></br>
                 <label>Start Date: {moment(timesheet.startDate).format("YYYY-MM-DD")} </label><br></br>
                 <label>End Date: {moment(timesheet.endDate).format("YYYY-MM-DD")} </label><br></br>
             </div>

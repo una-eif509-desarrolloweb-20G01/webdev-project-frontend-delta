@@ -17,6 +17,7 @@ import TimesheetsDetails from "./components/TimesheetDetails";
 import NotFound from "./components/NotFound";
 import AddHours from "./components/AddHours";
 import PayTimesheet from "./components/PayTimesheet";
+import StaffReport from "./components/StaffReport";
 
 
 function App() {
@@ -38,7 +39,7 @@ function App() {
     return (
         <Router>
             <Layout className="layout">
-                 <Header>
+                 <Header className="no-print">
                     <div className="logo"/>
                     <Menu theme="dark" mode="horizontal" style={{float: 'right'}} >
                         {
@@ -109,6 +110,7 @@ function App() {
                             <Route path="/timesheetsDetails/add/:id" component={TimesheetsDetails} />
                             <Route path="/timesheetDetails/hours/:id" component={AddHours} />
                             <Route path="/timesheets/pay/:id" component={PayTimesheet} />
+                            <Route path="/timesheets/staffreport/:id" component={StaffReport} />
                             <Route component={NotFound}/>
                             
 

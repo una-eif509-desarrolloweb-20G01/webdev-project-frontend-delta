@@ -85,6 +85,12 @@ const Timesheet = (props) => {
                 moment(Timesheet.endDate).format("YYYY-MM-DD")
           },
           {
+            title: 'Total Hours',
+            render: (Timesheet) => Timesheet.timesheetDetailsList? Timesheet.timesheetDetailsList.map(tsd=>
+                tsd.hoursList.reduce((ac,x)=>ac+x.hours,0)
+            ).reduce((ac,x)=>ac+x,0) : 0
+          },
+          {
             title: 'Details',
             render: (Timesheet) =>
               <Link
@@ -102,11 +108,20 @@ const Timesheet = (props) => {
                   Pay timesheet
               </Link>,
           },
+          {
+            title: 'Reports',
+            render: (Timesheet) =>
+              <Link
+                  to={"/timesheets/staffreport/" + Timesheet.idTimesheet}
+              >
+                  Staff Report
+              </Link>,
+          },
       ];
 
     return (
         <div>
-            <Table rowKey={Timesheet => Timesheet.idTimesheet} columns={columns} dataSource={TimesheetList}/>
+            <Table rowKey={Timesheet => Timesheet.idTimesheet} columns={columns} dataSource={TimesheetList.sort((a,b)=>a.idTimesheet-b.idTimesheet)}/>
             {error ? (
                 <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
             ) : null}
