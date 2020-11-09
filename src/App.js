@@ -17,8 +17,12 @@ import TimesheetsDetails from "./components/TimesheetDetails";
 import NotFound from "./components/NotFound";
 import AddHours from "./components/AddHours";
 import PayTimesheet from "./components/PayTimesheet";
+<<<<<<< HEAD
 import ApproveTimesheet from "./components/ApproveTimesheet";
 import ReportTimesheet from "./components/ReportTimesheet";
+=======
+import StaffReport from "./components/StaffReport";
+>>>>>>> Gabriel
 
 
 function App() {
@@ -40,7 +44,7 @@ function App() {
     return (
         <Router>
             <Layout className="layout">
-                 <Header>
+                 <Header className="no-print">
                     <div className="logo"/>
                     <Menu theme="dark" mode="horizontal" style={{float: 'right'}} >
                         {
@@ -111,8 +115,12 @@ function App() {
                             <Route path="/timesheetsDetails/add/:id" component={TimesheetsDetails} />
                             <Route path="/timesheetDetails/hours/:id" component={AddHours} />
                             <Route path="/timesheets/pay/:id" component={PayTimesheet} />
+<<<<<<< HEAD
                             <Route path="/timesheets/approve/:id" component={ApproveTimesheet} />
                             <Route path="/timesheets/report/:id" component={ReportTimesheet} />
+=======
+                            <Route path="/timesheets/staffreport/:id" component={StaffReport} />
+>>>>>>> Gabriel
                             <Route component={NotFound}/>
                             
 
