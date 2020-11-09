@@ -109,13 +109,12 @@ const Timesheet = (props) => {
               </Link>,
           },
           {
-<<<<<<< HEAD
-            title: 'Approve',
+            title: 'Reports',
             render: (Timesheet) =>
               <Link
-                  to={"/timesheets/approve/" + Timesheet.idTimesheet}
+                  to={"/timesheets/staffreport/" + Timesheet.idTimesheet}
               >
-                  Approve timesheet
+                  Staff Report
               </Link>,
           },
           {
@@ -125,14 +124,6 @@ const Timesheet = (props) => {
                   to={"/timesheets/report/" + Timesheet.idTimesheet}
               >
                   Report timesheet
-=======
-            title: 'Reports',
-            render: (Timesheet) =>
-              <Link
-                  to={"/timesheets/staffreport/" + Timesheet.idTimesheet}
-              >
-                  Staff Report
->>>>>>> Gabriel
               </Link>,
           },
       ];

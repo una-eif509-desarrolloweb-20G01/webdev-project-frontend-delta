@@ -1,29 +1,7 @@
-import React, {useCallback, useState, useLayoutEffect, useEffect} from "react";
+import React, {useState, useLayoutEffect} from "react";
 import TimesheetService from "../services/timesheet.service";
-import DepartmentService from "../services/department.service";
-
-import TimesheetDetailsService from "../services/timesheetDetails.service";
-
-import {Form, Alert, Input, Button, Select, Table,Modal} from 'antd';
-import {ExclamationCircleOutlined} from '@ant-design/icons';
+import {Alert, Table, Button} from 'antd';
 import AuthService from "../services/auth.service";
-
-const {confirm} = Modal;
-const layout = {
-    labelCol: {
-        span: 2,
-    },
-    wrapperCol: {
-        span: 8,
-    },
-};
-
-const tailLayout = {
-    wrapperCol: {
-        offset: 2,
-        span: 8,
-    },
-};
 
 const initialTimesheetState = [
     {
@@ -35,42 +13,50 @@ const initialTimesheetState = [
     }
 ];
 
+const __Table = (footer, key='tableKey') => ({
+    className,
+    style,
+    children
+}) => (
+    <table className={className} style={style} key={key}>
+        {children}
+        <tfoot>
+            {footer}
+        </tfoot>
+    </table>
+);
 
-const ApproveTimesheet = (props) => {
+const TableWithTFoot = ({data, columns, footer}) => (
+    <Table
+        dataSource={data}
+        columns={columns}
+        pagination={false}
+        components={{ table: __Table(footer) }}
+    />
+);
 
-    const [form] = Form.useForm();
-    const [submitted, setSubmitted] = useState(false);
+const StaffReport = (props) => {
+
     const [error, setError] = useState(false);
-    const [departments, setDepartments] = useState([]);
     const [timesheet, setTimesheet] = useState(initialTimesheetState);
     const [user, setUser] = useState(null);
-    const [selectedRowKeys, setSelectedRows] = useState([]);
+    const [totalhours, setTotal] = useState(0);
+    const [detailsLen, setDetailsLen] = useState(0);
 
-    const getDepartments = () => {
-        DepartmentService.getAll()
-            .then(response => {
-                console.log(response.data);
-                setDepartments(response.data);
-            })
-            .catch(err => {
-                console.log(err);
-                setError(err)
-            });
-    }
     const retrieveTimesheetById = (idTimesheet) => {
         if (idTimesheet) {
             TimesheetService.get(idTimesheet)
                 .then(response => {
                     setTimesheet(response.data);
                     console.log(response.data);
-                    let sel = [];
-                    if(response.data.timesheetDetailsList){
-                        response.data.timesheetDetailsList.forEach(x=>{
-                            if(x.paid===true)
-                                sel.push(x.idTimesheetDetails)
-                        })
-                    }    
-                    setSelectedRows(sel);
+
+                    let tot = response.data.timesheetDetailsList? response.data.timesheetDetailsList.map(tsd=>
+                        columns[2].render(tsd)
+                    ).reduce((ac,x)=>ac+x,0) : 0;
+
+                    setTotal(tot);
+
+                    setDetailsLen(response.data.timesheetDetailsList? response.data.timesheetDetailsList.length : 0)
                 })
                 .catch(e => {
                     setError(true);
@@ -81,9 +67,7 @@ const ApproveTimesheet = (props) => {
         }
     }; 
     
-    useLayoutEffect(() => {
-        
-        getDepartments();
+    useLayoutEffect(() => {    
 
         retrieveTimesheetById(props.match.params.id);       
 
@@ -99,152 +83,72 @@ const ApproveTimesheet = (props) => {
         // eslint-disable-next-line
     }, [props.match.params.id]);
 
-    const fillForm = useCallback(
-        () => {
-            let fieldvalues={
-                department: user? user.department.idDepartment: '',
-                timesheet: timesheet? timesheet.name : '',
-                user: user? user.username : ''
-            };        
-            form.setFieldsValue(fieldvalues);
-            
-        },
-        // eslint-disable-next-line
-        [form, timesheet, user],
-    );
-
-    useEffect(() => {
-        fillForm();
-    }, [fillForm]);
-
-    const saveUpdateForm = () => {
-        TimesheetService.update(timesheet)
-            .then(response => {
-                setTimesheet(response.data);
-                setSubmitted(true);
-                fillForm();
-                console.log(response.data);
-            })
-            .catch(e => {
-                setError(true);
-                console.log(e);
-            });
-    };
-    const update_approve = (item,estado) => {
-
-        if(estado == "approve" ){
-            TimesheetDetailsService.update("{idTimesheetDetails:"+item+",approved:true}")
-            .then(response => {
-                setTimesheet(response.data);
-                setSubmitted(true);
-                fillForm();
-                console.log(response.data);
-            })
-            .catch(e => {
-                setError(true);
-                console.log(e);
-            });
-        }else{
-            TimesheetDetailsService.update("{idTimesheetDetails:"+item+",approved:false}")
-            .then(response => {
-                setTimesheet(response.data);
-                setSubmitted(true);
-                fillForm();
-                console.log(response.data);
-            })
-            .catch(e => {
-                setError(true);
-                console.log(e);
-            });
-        }
-        
-        
-    };
-
-
-    const handleClose = () => {
-        setSubmitted(false);
-    };
-
-    
 
     const columns = [
-        {
-            title: 'EmployeeId',
-            render: tsd => tsd.user.idUser
-        },
         {
             title: 'Employee',
             render: tsd => `${tsd.user.firstName} ${tsd.user.lastName}`
         },
         {
-            title: 'Worked Hours',
+            title: 'Department',
+            render: tsd => tsd.user.department.name
+        },
+        {
+            title: 'Hours For Week',
             render: tsd => tsd.hoursList.reduce((ac,x)=>ac+x.hours,0)
         },
         {
-            title: 'Approve',
-            render: tsd =>
-            <Button type="primary" onClick={(e) => showConfirm(tsd.idTimesheetDetails)}>
-            YES
-            </Button>
-            ,
-          },
-          {
-            title: '',
-            render: tsd =>
-            <Button type="primary" onClick={(e) => showConfirm_no(tsd.idTimesheetDetails)}>
-            NO
-            </Button>
-            ,
-          },
+            title: 'Status',
+            render: tsd => "Paid:" + tsd.paid +
+            ", Approved:" + tsd.approved
+            
+        },
     ];
 
-
-    /*const onFinish = data => {
-        console.log("fin");
-        saveUpdateForm();
-    };*/
-
-
-    const showConfirm = (item) => {
-        confirm({
-            title: 'Do you Want to approve this timesheet?',
-            icon: <ExclamationCircleOutlined/>,
-            content: 'Approve Worked Hours',
-            onOk() {
-                //deleteDepartment(department.idDepartment);
-                update_approve(item,"approve");
-                console.log(item); //idTimesheetDetails
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-    }
-    const showConfirm_no = (item) => {
-        confirm({
-            title: 'Do you Want to Disapprove this timesheet?',
-            icon: <ExclamationCircleOutlined/>,
-            content: 'Disapprove Worked Hours',
-            onOk() {
-                //deleteDepartment(department.idDepartment);
-                update_approve(item,"disapprove");
-                console.log(item);
-            },
-            onCancel() {
-                console.log('Cancel');
-            },
-        });
-    }
+    const footer = (
+        <>
+            <tr>
+                <td colSpan="2" style={{textAlign: "right"}}>
+                    Average Hours
+                </td>
+                <td>
+                    {detailsLen!==0? totalhours/detailsLen:0}
+                </td>
+            </tr>
+            <tr>
+                <td colSpan="2" style={{textAlign: "right"}}>
+                    Total Hours
+                </td>
+                <td>
+                    {totalhours}
+                </td>
+            </tr>
+        </>
+        
+    )
 
     return (  
        
         <div>
-            <h1>Generar Reporte</h1>
+            <div>
+                <label>Timesheet: {timesheet.name} </label><br></br>
+                <label>User: {user? user.username : ''} </label><br></br>
+            </div>
+            <TableWithTFoot
+                data={timesheet.timesheetDetailsList}
+                columns={columns}
+                footer = {footer}
+            />
+            <Button htmlType="button" onClick={()=> window.print()} className="no-print">
+                Print
+            </Button>
+            {error ? (
+                <Alert message="Error in the system. Try again later." type="error" showIcon closable/>
+            ) : null}
         </div>
     );
 }
 
 
  
-export default ApproveTimesheet;
+export default StaffReport;
