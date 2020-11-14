@@ -49,7 +49,7 @@ p,h1,h2,h3,h4,h5{
   color: rgb(255, 255, 255);
   background: rgb(45, 45, 45);;
   padding: 24px;
-  min-height: 280px;
+  min-height: 1280px;
 }
 #components-layout-demo-top .logo {
   width: 120px;
@@ -70,4 +70,22 @@ p,h1,h2,h3,h4,h5{
     {
         display: none !important;
     }
+}
+.box{
+  background-color: #fff;
+  width: 200px;
+  margin: 5%;
+  display: inline-block;
+  float: left;
+  height: 200px;
+  text-align: center;
+  border-radius: 5%;
+}
+.box  span{ 
+  color:#000;
+  font-weight: bold;
+  font-size: 18px;
+}
+.box  img{ 
+width: 150px;
 }
