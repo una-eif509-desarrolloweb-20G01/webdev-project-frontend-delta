@@ -48,35 +48,37 @@ const Home = (props) => {
             {
                 currentUser?
                 (
-                    <h1>HOME</h1>
+                    <div>
+                        <h1>HOME</h1>
+                        <div className='box' onClick={redirect_deparments}>
+                            <span>Deparments</span>
+                            <img src={deparment} alt="deparment" />
+                        </div>
+                        <div className='box' onClick={redirect_reports}>
+                            <span>Reports</span>
+                            <img src={report} alt="report" />
+                        </div>
+                        <div className='box' onClick={redirect_timesheet}>
+                            <span>Timesheet</span>
+                            <img src={timesheet} alt="timesheet" />
+                        </div>
+                        <div className='box' onClick={redirect_hours}>
+                            <span>Hours</span>
+                            <img src={hours} alt="hours" />
+                        </div>
+                        <div className='box' onClick={redirect_paid}>
+                            <span>Paid&nbsp;&nbsp;&nbsp;</span>
+                            <img src={paid} alt="paid" />
+                        </div>
+                    </div>
+                    
                    
                 ):
                 (
                     <h1>loading...</h1>
                 )
 
-            }
-                
-                <div className='box' onClick={redirect_deparments}>
-                    <span>Deparments</span>
-                    <img src={deparment} alt="deparment" />
-                </div>
-                <div className='box' onClick={redirect_reports}>
-                    <span>Reports</span>
-                    <img src={report} alt="report" />
-                </div>
-                <div className='box' onClick={redirect_timesheet}>
-                    <span>Timesheet</span>
-                    <img src={timesheet} alt="timesheet" />
-                </div>
-                <div className='box' onClick={redirect_hours}>
-                    <span>Hours</span>
-                    <img src={hours} alt="hours" />
-                </div>
-                <div className='box' onClick={redirect_paid}>
-                    <span>Paid&nbsp;&nbsp;&nbsp;</span>
-                    <img src={paid} alt="paid" />
-                </div>
+            } 
 
                     
         </div>
