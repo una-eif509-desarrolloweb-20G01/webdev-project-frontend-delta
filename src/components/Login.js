@@ -27,7 +27,7 @@ const Login = (props) => {
                 console.log(login);
                 setLogin(response.data);
                 form.resetFields();
-                props.history.push("/Home");
+                props.history.push("/");
                 window.location.reload();
             })
             .catch(err => {
