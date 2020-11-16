@@ -19,6 +19,7 @@ const Home = (props) => {
             AuthService.logout();            
             props.history.push("/login");
         }
+        // eslint-disable-next-line
     }, []);
 
     /**/ 
