@@ -23,14 +23,13 @@ const tailLayout = {
     },
 };
 
-const initialTimesheetState = [
+const initialTimesheetState = 
     {
         "idTimesheet": null,
         "name": "",
         "startDate": "",
         "endDate": ""
-    }
-];
+    };
 
 const Timesheet = (props) => {
 

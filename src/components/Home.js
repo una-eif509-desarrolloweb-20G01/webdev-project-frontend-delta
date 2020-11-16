@@ -16,7 +16,8 @@ const Home = (props) => {
         if (user) {
             setCurrentUser(user);
         }else{
-            console.log('no user')
+            AuthService.logout();            
+            props.history.push("/login");
         }
     }, []);
 
