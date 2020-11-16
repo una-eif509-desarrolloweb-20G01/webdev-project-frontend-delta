@@ -161,7 +161,6 @@ const AddHours = (props) => {
                 .then(response => {
                     console.log(response.data);
                     props.history.push("/timesheets");
-                    window.location.reload();
                 })
                 .catch(e => {
                     setError(true);

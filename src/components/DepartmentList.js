@@ -36,7 +36,6 @@ const Department = (props) => {
                 setError(err)
                 if (err.response.status === 401) {
                     props.history.push("/login");
-                    window.location.reload();
                 }
             });
     }
