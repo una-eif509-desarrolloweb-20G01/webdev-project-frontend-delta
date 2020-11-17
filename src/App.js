@@ -43,11 +43,16 @@ function App() {
             <Layout className="layout">
                  <Header className="no-print">
                     <div className="logo"/>
+                    
                     <Menu theme="dark" mode="horizontal" style={{float: 'right'}} >
                         {
                             currentUser?(
                                 <>
-
+                                    <Menu.Item key="/">
+                                        <Link to={"/"}>
+                                            Home
+                                        </Link>
+                                    </Menu.Item>
                                     <Menu.Item key="/timesheets">
                                         <Link to={"/timesheets"}>
                                             Timesheets

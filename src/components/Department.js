@@ -113,7 +113,6 @@ const Department = (props) => {
                 .then(response => {
                     console.log(response.data);
                     props.history.push("/departments");
-                    window.location.reload();
                 })
                 .catch(e => {
                     setError(true);

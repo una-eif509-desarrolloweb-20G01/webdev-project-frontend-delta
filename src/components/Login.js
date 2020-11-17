@@ -28,7 +28,6 @@ const Login = (props) => {
                 setLogin(response.data);
                 form.resetFields();
                 props.history.push("/");
-                window.location.reload();
             })
             .catch(err => {
                 setError('Login Fail');
